@@ -48,22 +48,18 @@ def test_qr_decomps():
     ql_functions = [QL_by_Givens, QL_by_Householder, ql_cgs, ql_mgs]
 
     for qr_func, matr in itertools.product(qr_functions, test_cases):
-        Q, R, unitary_error = qr_func(matr)
-        reconstruction_error = norm(matr - Q @ R) / norm(matr)
+        Q, R, (unitary_error, reconstruction_error) = qr_func(matr)
+        # reconstruction_error = norm(matr - Q @ R) / norm(matr)
         triang_error = norm(R - np.triu(R)) / norm(matr)
-
-        # print(np.diag(R))
         
         # assert triang_error < 10**-12
         assert unitary_error < 10**-12
         assert reconstruction_error < 10**-12
 
     for qr_func, matr in itertools.product(ql_functions, test_cases):
-        Q, L, unitary_error = qr_func(matr)
-        reconstruction_error = norm(matr - Q @ L) / norm(matr)
+        Q, L, (unitary_error, reconstruction_error) = qr_func(matr)
+        # reconstruction_error = norm(matr - Q @ L) / norm(matr)
         triang_error = norm(L - np.tril(L)) / norm(matr)
-
-        # print(np.diag(L))
 
         assert triang_error < 10**-12
         assert unitary_error < 10**-12
@@ -102,8 +98,8 @@ def test_lu_decomps():
 
     lu_partial = lambda A : lu_decomp(A, pivot='partial')
     lu_non = lambda A : lu_decomp(A, pivot='non')
-    lu_partial_inv = lambda A : lu_decomp(A, pivot='partial', inverse=True)
-    lu_non_inv = lambda A : lu_decomp(A, pivot='non', inverse=True)
+    lu_partial_inv = lambda A : lu_decomp(A, pivot='partial', order='lu')
+    lu_non_inv = lambda A : lu_decomp(A, pivot='non', order='lu')
 
     decomp_fns = [lu_non]#, lu_non_inv]
     decomp_pivot_fns = [lu_partial]#, lu_partial_inv]

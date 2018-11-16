@@ -22,7 +22,7 @@ def lstsq_by_QR(A, b):
     return x
 
 
-def lu_decomp(A, pivot='partial', inverse=False):
+def lu_decomp(A, pivot='partial', order='ul'):
 
     m, n = A.shape
 
@@ -33,7 +33,7 @@ def lu_decomp(A, pivot='partial', inverse=False):
     L = A.copy()
     P = np.eye(n)
 
-    if inverse:
+    if order == 'lu':
 
         for i in range(n-1, 0, -1):
 
@@ -43,7 +43,7 @@ def lu_decomp(A, pivot='partial', inverse=False):
             # U[:i,i] -= 
                 
 
-    else:
+    elif order == 'ul':
         for i in range(n-1, 0, -1):
 
             if pivot == 'partial':

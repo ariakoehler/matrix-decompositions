@@ -30,21 +30,14 @@ def QR_by_GS(A, method):
                 Q[:,j] = Q[:,j] - R[i,j] * Q[:,i]
 
 
-            # print((R[i,i+1:].T @ Q[i+1:,:]).shape)
             # R[i,i+1:] * Q[:,i]
             # R[i,i+1:] = Q[:,i].T @ Q[:,i+1:]
-            # print(R[i,:])
             # Q[:,i+1:] = Q[:,i+1:] - R[i,:] @ Q[:,i]
-
-    # print(norm(np.eye(n) - Q.T @ Q)/norm(A), method)
             
-    return Q, R, norm(np.eye(n) - Q.T @ Q)/norm(A)
+    return Q, R, (norm(np.eye(n) - Q.T @ Q)/norm(A), norm(A - Q @ R) / norm(A))
 
 
 def QR_by_Householder(A):
-
-    # print('QR House')
-
     m, n = A.shape
     Q = np.eye(m, m)
     R = A[:m,:n].copy()
@@ -60,18 +53,13 @@ def QR_by_Householder(A):
     # if R[n-1,n-1] < 0:
     #     R[n-1,n-1] = abs(R[n-1,n-1])
     
-    return Q, R, norm(np.eye(m) - Q.T @ Q)/norm(A)
+    return Q, R, (norm(np.eye(m) - Q.T @ Q)/norm(A), norm(A - Q @ R) / norm(A))
 
 
 def QR_by_Givens(A):
-
-    # print('QR Givens')
-    
     m, n = A.shape
     Q = np.eye(m,m)
     R = A.copy()
-
-    # print('A=\n{}'.format(A))
     
     for i in range(n):
         for j in range(i+1,m):
@@ -93,15 +81,8 @@ def QR_by_Givens(A):
                 # R_block = Q_temp @ R_block
                 # Q[i:j+1:j-i, i:j+1:j-i] = Q_block
                 # R[i:j+1:j-i, i:j+1:j-i] = R_block
-                # print('Q_{}{} = \n{}'.format(i,j,Q_temp))
-                # print('R_{}{}=\n{}'.format(i,j,R))
-                # print('err = {}'.format(norm())
-
-    # R = Q.T @ A
-
-    # print('R={}'.format(R))
     
-    return Q, R, norm(np.eye(m,m) - Q.T @ Q)/norm(A)
+    return Q, R, (norm(np.eye(m) - Q.T @ Q)/norm(A), norm(A - Q @ R) / norm(A))
 
 
 def QL_by_GS(A, method):
@@ -127,13 +108,10 @@ def QL_by_GS(A, method):
                 L[i,j] = Q[:,j] @ Q[:,i]
                 Q[:,j] = Q[:,j] - L[i,j] * Q[:,i]
 
-    return Q, L, norm(np.eye(n) - Q.T @ Q)/norm(A)
+    return Q, L, (norm(np.eye(n) - Q.T @ Q)/norm(A), norm(A - Q @ L) / norm(A))
 
 
 def QL_by_Householder(A):
-    
-    # print('QL House')
-
     m, n = A.shape
     Q = np.eye(m, m)
     L = A.copy()
@@ -146,7 +124,7 @@ def QL_by_Householder(A):
         Q[:,:i+1] -= 2 * (Q[:,:i+1] @ v)[:,np.newaxis] @ v[np.newaxis,:]
         L[:i+1,:i+1] -= 2 * v[:,np.newaxis] @ (v @ L[:i+1,:i+1])[np.newaxis,:]
 
-    return Q, L, norm(np.eye(m) - Q.T @ Q)
+    return Q, L, (norm(np.eye(m) - Q.T @ Q), norm(A - Q @ L) / norm(A))
 
 
 def QL_by_Givens(A):
@@ -154,8 +132,6 @@ def QL_by_Givens(A):
     m, n = A.shape
     Q = np.eye(m,m)
     L = A.copy()
-
-    # print('QL Givens')
     
     for i in range(n-1,-1,-1):
         for j in range(i-1,-1,-1):
@@ -170,4 +146,4 @@ def QL_by_Givens(A):
                 Q[:,:] = Q @ Q_temp.T
                 L = Q_temp @ L
     
-    return Q, L, norm(np.eye(m,m) - Q.T @ Q)/norm(A)
+    return Q, L, (norm(np.eye(m,m) - Q.T @ Q)/norm(A), norm(A - Q @ L) / norm(A))
