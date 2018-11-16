@@ -9,19 +9,9 @@ from scipy.linalg import lu
 def generate_tests_decomp():
     test_cases = []
     test_cases.append(np.random.rand(5, 5))
-    test_cases.append(np.random.rand(20, 10))
+    test_cases.append(np.random.rand(20, 10))    
+    test_cases.append(np.random.rand(200, 100))
     
-    # test_cases.append(np.random.rand(200, 100))
-    # test_cases.append(np.random.rand(2000, 1000))
-
-    # rank_col_def = np.random.rand(100, 200)
-    # rank_col_def[:,1] = rank_col_def[:,0] + rank_col_def[:,2]
-    # test_cases.append(rank_col_def)
-
-    # rank_row_def = np.random.rand(100, 200)
-    # rank_row_def[:,1] = rank_row_def[:,0] + rank_row_def[:,2]
-    # test_cases.append(rank_row_def)
-
     return test_cases
 
 def generate_tests_leastsq():
@@ -49,19 +39,15 @@ def test_qr_decomps():
 
     for qr_func, matr in itertools.product(qr_functions, test_cases):
         Q, R, (unitary_error, reconstruction_error) = qr_func(matr)
-        # reconstruction_error = norm(matr - Q @ R) / norm(matr)
         triang_error = norm(R - np.triu(R)) / norm(matr)
         
-        # assert triang_error < 10**-12
         assert unitary_error < 10**-12
         assert reconstruction_error < 10**-12
 
     for qr_func, matr in itertools.product(ql_functions, test_cases):
         Q, L, (unitary_error, reconstruction_error) = qr_func(matr)
-        # reconstruction_error = norm(matr - Q @ L) / norm(matr)
         triang_error = norm(L - np.tril(L)) / norm(matr)
 
-        assert triang_error < 10**-12
         assert unitary_error < 10**-12
         assert reconstruction_error < 10**-12
 
@@ -139,8 +125,5 @@ def test_leastsq():
         err = norm(A @ x - b)
         numpy_err = norm(A @ x_numpy - b)
         err_diff = abs(err - numpy_err)
-        # print('least square error = {}'.format(err))
-        # print('numpy error = {}'.format(numpy_err))
-        # print('error diff = {}'.format(err_diff))
         
         assert err < 10**-8
